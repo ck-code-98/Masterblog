@@ -1,5 +1,14 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-<h1>Delete "{{ post.title }}"?</h1>
-  <form action="{{ url_for('delete', post_id=post.id) }}" method="POST" style="display:inline">
-  <button type="submit">Delete post</button>
-  </form>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Delete Blog Post</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <h1>Delete "{{ post.title }}"?</h1>
+    <form action="{{ url_for('delete', post_id=post.id) }}" method="POST" style="display:inline">
+      <button type="submit">Delete post</button>
+    </form>
+  </body>
+</html>

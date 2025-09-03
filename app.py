@@ -6,6 +6,7 @@ with open("data.json", encoding="utf-8") as file:
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     posts = []
@@ -50,6 +51,35 @@ def delete(post_id):
             json.dump(data, filehandle, indent=2)
         return redirect(url_for('index'))
     return render_template("delete.html", post=post)
+
+
+@app.route('/update/<int:post_id>', methods=['GET', 'POST'])
+def update(post_id):
+    post = None
+    for element in data:
+        if element.get("id") == post_id:
+            post = element
+            break
+    if post is None:
+        return "Post not found", 404
+
+    if request.method == 'POST':
+        title = request.form.get("title")
+        author = request.form.get("author")
+        content = request.form.get("content")
+
+        if not title or not author or not content:
+            return render_template('update.html', post=post)
+
+        post["title"] = title
+        post["author"] = author
+        post["content"] = content
+
+        with open("data.json", "w", encoding="utf-8") as filehandle:
+            json.dump(data, filehandle, indent=2)
+        return redirect(url_for("index"))
+
+    return render_template('update.html', post=post)
 
 
 if __name__ == '__main__':
