@@ -12,9 +12,6 @@ def save_data():
 
 @app.route('/')
 def index():
-    posts = []
-    for element in data:
-        posts.append(element["content"])
     return render_template('index.html', posts=data)
 
 
@@ -70,9 +67,9 @@ def update(post_id):
         return "Post not found", 404
 
     if request.method == 'POST':
-        title = request.form.get("title")
-        author = request.form.get("author")
-        content = request.form.get("content")
+        title = request.form.get("title", "").strip()
+        author = request.form.get("author", "").strip()
+        content = request.form.get("content", "").strip()
 
         if not title or not author or not content:
             return render_template('update.html', post=post)
