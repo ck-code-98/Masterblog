@@ -6,6 +6,9 @@ with open("data.json", encoding="utf-8") as file:
 
 app = Flask(__name__)
 
+def save_data():
+    with open("data.json", "w", encoding="utf-8") as filehandle:
+        json.dump(data, filehandle, indent=2)
 
 @app.route('/')
 def index():
@@ -18,18 +21,21 @@ def index():
 @app.route('/add', methods=['GET', 'POST'])
 def add():
     if request.method == 'POST':
-        title = request.form["title"]
-        author = request.form["author"]
-        content = request.form["content"]
+        title = request.form.get("title", "").strip()
+        author = request.form.get("author", "").strip()
+        content = request.form.get("content", "").strip()
 
-        new_element = {"id": len(data) + 1,
+        if not title or not author or not content:
+            return redirect(url_for("add"))
+
+        new_id = max([post["id"] for post in data], default=0) + 1
+        new_element = {"id": new_id,
                     "title": title,
                     "author": author,
                     "content": content}
-        data.append(new_element)
 
-        with open("data.json", "w", encoding="utf-8") as filehandle:
-            json.dump(data, filehandle, indent=2)
+        data.append(new_element)
+        save_data()
         return redirect(url_for("index"))
 
     return render_template('add.html')
@@ -47,9 +53,9 @@ def delete(post_id):
 
     if request.method == "POST":
         data.remove(post)
-        with open("data.json", "w", encoding="utf-8") as filehandle:
-            json.dump(data, filehandle, indent=2)
+        save_data()
         return redirect(url_for('index'))
+
     return render_template("delete.html", post=post)
 
 
@@ -75,8 +81,7 @@ def update(post_id):
         post["author"] = author
         post["content"] = content
 
-        with open("data.json", "w", encoding="utf-8") as filehandle:
-            json.dump(data, filehandle, indent=2)
+        save_data()
         return redirect(url_for("index"))
 
     return render_template('update.html', post=post)
